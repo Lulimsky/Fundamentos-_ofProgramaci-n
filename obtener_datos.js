@@ -1,20 +1,24 @@
 const axios = require('axios');
 
-async function obtener_datos_climaticos(nombre_pais) {
+async function obtener_datos_climaticos(nombre_ciudad) {
     const apiKey = 'TU_API_KEY';
-    const url = `http://api.openweathermap.org/data/2.5/weather?q=${nombre_pais}&lang=es&appid=${apiKey}`;
+    const url = `http://api.openweathermap.org/data/2.5/weather?q=${nombre_ciudad}&lang=es&appid=${apiKey}`;
 
     try {
         const response = await axios.get(url);
         const data = response.data;
 
         if (data.cod === 200) {
-            const temp_actual = data.main.temp;
+            const ciudad = data.name;
+            const pais = data.sys.country;
+            const descripcion_clima = data.weather[0].description;
+            const sensacion_termica = data.main.feels_like;
+            const presion = data.main.pressure;
+            const humedad = data.main.humidity;
             const temp_min = data.main.temp_min;
             const temp_max = data.main.temp_max;
-            const descripcion_clima = data.weather[0].description;
 
-            return `País: ${nombre_pais}\nTemperatura Actual: ${temp_actual}°C\nTemperatura Mínima: ${temp_min}°C\nTemperatura Máxima: ${temp_max}°C\nDescripción Clima: ${descripcion_clima}`;
+            return `${ciudad};${pais};${descripcion_clima};${sensacion_termica};${presion};${humedad};${temp_min};${temp_max}`;
         } else {
             return "Error al obtener los datos climáticos";
         }
@@ -23,14 +27,13 @@ async function obtener_datos_climaticos(nombre_pais) {
     }
 }
 
-const paises = ["Argentina", "Colombia", "Peru", "Mexico", "Chile", "Brasil"];
+const nombre_ciudades = ["Buenos Aires", "Bogota", "Lima", "Ciudad de Mexico", "Santiago", "Brasilia"];
 
-async function obtener_datos_climaticos_para_paises() {
-    for (const pais of paises) {
-        const datos_climaticos = await obtener_datos_climaticos(pais);
+async function obtener_datos_climaticos_para_todas_ciudades() {
+    for (const nombre_ciudad of nombre_ciudades) {
+        const datos_climaticos = await obtener_datos_climaticos(nombre_ciudad);
         console.log(datos_climaticos);
-        console.log("-".repeat(30));
     }
 }
 
-obtener_datos_climaticos_para_paises();
+obtener_datos_climaticos_para_todas_ciudades();
